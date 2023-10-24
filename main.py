@@ -32,12 +32,12 @@ if __name__ == '__main__':
     langchain_mode = 'UserData'
     api_name = '/submit_nochat_api'  # NOTE: like submit_nochat but stable API for string dict passing
     kwargs = dict(
-      #  langchain_mode=langchain_mode,
+      langchain_mode=langchain_mode,
         instruction_nochat="what are you loving?",
-      #  langchain_action="Query",
-      #  top_k_docs=4,
-      #  document_subset='Relevant',
-      #  document_choice='ALL',
+      langchain_action="Query",
+      top_k_docs=4,
+      document_subset='Relevant',
+       document_choice='ALL',
         max_new_tokens=1024,
         max_time=300,
         do_sample=False,

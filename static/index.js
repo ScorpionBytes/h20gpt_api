@@ -31,7 +31,7 @@ const createChatElement = (content, className) => {
 
 const getChatResponse = async (incomingChatDiv) => {
     try {
-        console.log("Vor dem fetch");
+        const HOST = "https://68b9a5bec6d39df45e.gradio.live"; // Fügen Sie Ihren Host hier ein
         const response = await fetch('/get_response', {
             method: 'POST',
             headers: {
@@ -39,30 +39,36 @@ const getChatResponse = async (incomingChatDiv) => {
             },
             body: JSON.stringify({user_input: userText})
         });
-        console.log("Nach dem fetch", response);
         const data = await response.json();
-        console.log("Nach dem JSON-Parsing", data);
 
-const chatResponseDiv = incomingChatDiv.querySelector(".chat-response");
+        const chatResponseDiv = incomingChatDiv.querySelector(".chat-response");
 
-// Alle Kinder von chatResponseDiv entfernen
-while (chatResponseDiv.firstChild) {
-    chatResponseDiv.removeChild(chatResponseDiv.firstChild);
-}
+        // Alle Kinder von chatResponseDiv entfernen
+        while (chatResponseDiv.firstChild) {
+            chatResponseDiv.removeChild(chatResponseDiv.firstChild);
+        }
 
-if (data.response) {
-    const trimmedResponse = data.response.trim();
-        const formattedResponse = trimmedResponse.replace(/\n/g, "  \n");
-
-    const htmlContent = marked.marked(formattedResponse ); // Verwenden Sie einfach `marked`
-    chatResponseDiv.innerHTML = `<p>${htmlContent}</p>`;  // removeEmptyParagraphs(chatResponseDiv);
+        if (data.response) {
+            const trimmedResponse = data.response.trim();
+            const htmlContent = marked.marked(trimmedResponse);
+            chatResponseDiv.innerHTML = `<p>${htmlContent}</p>`;
+ const firstEmptyP = chatResponseDiv.querySelector('p:empty');
+        if (firstEmptyP) {
+            chatResponseDiv.removeChild(firstEmptyP);
+        }
+            // Füge Quellen hinzu
+            if (data.sources && data.sources.length > 0) {
+                let sourcesHtml = "<div class='sources'><strong>Sources</strong><br>Sources [Score | Link]:<br>";
+                data.sources.forEach(source => {
+                    const url = `${HOST}/file/${source.source}`;
+                    sourcesHtml += `${source.score.toFixed(2)} | <a href="${url}" target="_blank">${source.source}</a><br>${source.content}<br>`;
+                });
+                sourcesHtml += "End Sources</div>";
+                chatResponseDiv.innerHTML += sourcesHtml;
+            }
         } else if (data.error) {
             chatResponseDiv.innerHTML = `<p>Error: ${data.error}</p>`;
-
-} else if (data.error) {
-    chatResponseDiv.innerHTML = `<p>Error: ${data.error}</p>`;
-}
-
+        }
 
         // Remove the typing animation and save the chats to local storage
         incomingChatDiv.querySelector(".typing-animation").remove();
@@ -70,11 +76,12 @@ if (data.response) {
         chatContainer.scrollTo(0, chatContainer.scrollHeight);
 
     } catch (error) {
-        console.log("Fehler aufgetreten", error);
         const chatResponseDiv = incomingChatDiv.querySelector(".chat-response");
         chatResponseDiv.innerHTML = `<p class="error">Oops! Something went wrong while retrieving the response. Please try again.</p>`;
     }
 }
+
+
 
 function removeEmptyParagraphs(element) {
     const paragraphs = element.querySelectorAll('p');
