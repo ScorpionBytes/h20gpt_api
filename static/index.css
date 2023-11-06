@@ -67,10 +67,10 @@ body {
   font-size: 3.3rem;
 }
 .default-text p {
-      font-family: Roboto, Helvetica, Arial, sans-serif !important;
-
-  margin-top: 10px;
-  font-size: 1.1rem;
+    font-family: Roboto, Helvetica, Arial, sans-serif !important;
+    font-size: 1.2rem;
+    margin-top: 10px;
+    line-height: 1.7rem;
 }
 .chat-container .chat {
   padding: 25px 10px;
@@ -186,8 +186,7 @@ bot {
   display: flex;
   padding: 20px 10px;
   justify-content: center;
-  background: var(--outgoing-chat-bg);
-  border-top: 1px solid var(--incoming-chat-border);
+  background: #416779;
 }
 .typing-container .typing-content {
   display: flex;
@@ -200,9 +199,21 @@ bot {
   display: flex;
   position: relative;
 }
+.sources > a {
+    color: #4C636F;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.sources > a:hover {
+      text-decoration: underline;
+
+}
 .sources {
+    font-family: Roboto, Helvetica, Arial, sans-serif !important;
+    line-height: 1.5em;
     font-size: 0.8em;
-    color: #555;
+    color: #555c;
     margin-top: 20px;
     border-top: 1px solid #ccc;
     padding-top: 10px;
@@ -216,11 +227,11 @@ bot {
   width: 100%;
   border: none;
   padding: 17px 45px 15px 20px;
-  color: var(--text-color-textarea);
+  color: #416779;
   font-size: 1rem;
   max-height: 250px;
   overflow-y: auto;
-  background: var(--textarea);
+  background: #ffffff;
   outline: 1px solid var(--incoming-chat-border);
 }
 .typing-textarea textarea::placeholder {
@@ -239,6 +250,8 @@ bot {
   position: absolute;
   right: 0;
   bottom: 0;
+        color: #416779;
+
   visibility: hidden;
 }
 .typing-textarea textarea:valid ~ span {
@@ -250,11 +263,14 @@ bot {
 .typing-controls span {
   margin-left: 7px;
   font-size: 1.4rem;
-  background: var(--textarea);
+      color: #416779;
+  background: #ffffff;
   outline: 1px solid var(--incoming-chat-border);
 }
 .typing-controls span:hover {
-  background: var(--icon-hover-bg);
+        color:  #ffffff;
+
+  background: #416779;
 }
 pre {
     padding: 30px;
@@ -279,9 +295,6 @@ pre {
     height: 32px;
     width: 32px;
   }
-  .chat-container .chat p {
-    padding: 0 20px;
-  }
   .chat .chat-content:not(:has(.typing-animation), :has(.error)) span {
     visibility: visible;
   }
@@ -299,5 +312,8 @@ pre {
   }
   span.material-symbols-rounded {
     font-size: 1.25rem!important;
+  }
+  .chat .chat-details{
+        gap: 0.6rem;
   }
 }

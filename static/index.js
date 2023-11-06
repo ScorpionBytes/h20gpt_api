@@ -5,14 +5,13 @@ const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 
 let userText = null;
-const API_KEY = "PASTE-YOUR-API-KEY-HERE"; // Paste your API key here
 
 const loadDataFromLocalstorage = () => {
     // Load saved chats and theme from local storage and apply/add on the page
     document.body.classList.add("light-mode");
 
     const defaultText = `<div class="default-text">
-    <h1>Chatten Sie mit öffentlichen IT-Daten</h1>
+    <h1>ÖFIT Chatbot</h1>
     <p>Beginnen Sie eine Unterhaltung und entdecken Sie Informationen aus öffentlichen IT-Quellen.<br> Ihre Chat-Historie wird hier angezeigt.</p>
 </div>
 `
@@ -20,7 +19,21 @@ const loadDataFromLocalstorage = () => {
     chatContainer.innerHTML = localStorage.getItem("all-chats") || defaultText;
     chatContainer.scrollTo(0, chatContainer.scrollHeight); // Scroll to bottom of the chat container
 }
+// Laden der mapping.json Datei
+const loadMappingData = async () => {
+    const response = await fetch('/static/mapping.json'); // Pfad zur mapping.json Datei anpassen
+    const mappingData = await response.json();
+    return mappingData;
+};
 
+// Funktion zum Finden des Dateinamens basierend auf der URL
+const findUrlByFileName = (fileName, mappingData) => {
+    // Entfernen Sie den Pfad und die Dateiendung, um nur den Titel zu erhalten
+    const title = fileName.replace('user_path/', '').replace('.txt', '').replace('.pdf', '');
+    // Suchen der URL basierend auf dem Titel
+    const url = mappingData[title];
+    return url || "URL nicht gefunden";
+};
 const createChatElement = (content, className) => {
     // Create new div and apply chat, specified class and set html content of div
     const chatDiv = document.createElement("div");
@@ -31,7 +44,7 @@ const createChatElement = (content, className) => {
 
 const getChatResponse = async (incomingChatDiv) => {
     try {
-        const HOST = "https://68b9a5bec6d39df45e.gradio.live"; // Fügen Sie Ihren Host hier ein
+        const HOST = "https://dd2131c7c4033653b2.gradio.live"; // Fügen Sie Ihren Host hier ein
         const response = await fetch('/get_response', {
             method: 'POST',
             headers: {
@@ -55,14 +68,16 @@ const getChatResponse = async (incomingChatDiv) => {
  const firstEmptyP = chatResponseDiv.querySelector('p:empty');
         if (firstEmptyP) {
             chatResponseDiv.removeChild(firstEmptyP);
-        }
+        }        const mappingData = await loadMappingData();
+
             // Füge Quellen hinzu
             if (data.sources && data.sources.length > 0) {
                 let sourcesHtml = "<div class='sources'><strong>Sources</strong><br>Sources [Score | Link]:<br>";
-                data.sources.forEach(source => {
-                    const url = `${HOST}/file/${source.source}`;
-                    sourcesHtml += `${source.score.toFixed(2)} | <a href="${url}" target="_blank">${source.source}</a><br>${source.content}<br>`;
-                });
+            data.sources.forEach(source => {
+                const fileName = source.source.replace('user_path/', '').replace('.txt', ''); // Entfernen Sie den Pfad und die Dateiendung
+                const url = findUrlByFileName(fileName, mappingData); // Reverse-Mapping hier
+                sourcesHtml += `${source.score.toFixed(2)} | <a href="${url}" target="_blank">${fileName}</a><br>${source.content}<br>`;
+            });
                 sourcesHtml += "End Sources</div>";
                 chatResponseDiv.innerHTML += sourcesHtml;
             }
@@ -175,7 +190,7 @@ const handleOutgoingChat = () => {
 
 deleteButton.addEventListener("click", () => {
     // Remove the chats from local storage and call loadDataFromLocalstorage function
-    if (confirm("Are you sure you want to delete all the chats?")) {
+    if (confirm("Bist du sicher, dass du alle Chats löschen möchtest?")) {
         localStorage.removeItem("all-chats");
         loadDataFromLocalstorage();
     }
@@ -203,7 +218,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const copyButtons = document.querySelectorAll('.material-symbols-rounded');
     copyButtons.forEach((button) => {
         button.addEventListener('click', () => {
-            console.log('Button clicked!');
         });
     });
 });

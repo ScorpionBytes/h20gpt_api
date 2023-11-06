@@ -5,7 +5,7 @@ import ast
 
 app = Flask(__name__)
 
-HOST_URL = "https://68b9a5bec6d39df45e.gradio.live"
+HOST_URL = "https://d8b8336c5200f99184.gradio.live"
 
 
 @app.route('/')
@@ -21,16 +21,21 @@ def get_response():
     client = Client(HOST_URL)
     api_name = '/submit_nochat_api'
     kwargs = dict(
+    system_prompt = 'Du bist ein Hilfsbereiter Chatbot von Fraunhofer und beantwortest fragen von Nutzer über die öffentliche IT Dokumentationen',
+
         langchain_mode='UserData',
-    instruction_nochat=user_input,
+    instruction_nochat='USER: '+ user_input,
     langchain_action="Query",
-    top_k_docs=4,
+    top_k_docs=3,
     document_subset='Relevant',
     document_choice='ALL',
     max_new_tokens=1024,
-    max_time=300,
-    do_sample=False,
-    stream_output=False)
+    max_time=120,
+    do_sample=True,
+    stream_output=False,    temperature = 0.9, top_p = 0.85, top_k = 70, penalty_alpha = 0.0,
+        num_beams= 1
+
+)
 
     res_string = client.predict(str(dict(kwargs)), api_name=api_name)
 
@@ -40,11 +45,14 @@ def get_response():
         sources = res_dict.get('sources', [])  # Angenommen, die Quellen sind unter dem Schlüssel "sources" gespeichert
     except Exception as e:
         return jsonify({'error': str(e)})
-
+    print(antwort)
     return jsonify({'response': antwort, 'sources': sources})
 
 
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+
+    app.run(host='0.0.0.0', port=5000)
+
+    #app.run(debug=True)
