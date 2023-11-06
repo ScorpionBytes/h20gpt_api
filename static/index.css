@@ -112,7 +112,7 @@ span.material-symbols-rounded {
 }
 .chat .chat-details {
   display: flex;
-  align-items: center;
+    align-items: flex-start;
       gap: 1.5rem;
 }
 .chat-response {
@@ -133,7 +133,7 @@ bot {
     color: #555;
     font-size: 0.9rem;
 }
-.chat .chat-details img {
+.chat .chat-details .imgages {
   width: 35px;
   height: 35px;
   align-self: flex-start;
@@ -152,6 +152,7 @@ bot {
 }
 .chat .typing-animation {
   display: inline-flex;
+        margin: auto;
 }
 .typing-animation .typing-dot {
   height: 7px;

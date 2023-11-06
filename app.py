@@ -21,10 +21,9 @@ def get_response():
     client = Client(HOST_URL)
     api_name = '/submit_nochat_api'
     kwargs = dict(
-    system_prompt = 'Du bist ein Hilfsbereiter Chatbot von Fraunhofer und beantwortest fragen von Nutzer über die öffentliche IT Dokumentationen',
 
         langchain_mode='UserData',
-    instruction_nochat='USER: '+ user_input,
+    instruction_nochat='Du bist ein Fraunhofer-Assistent für IT-Fragen. Deine Aufgabe ist es, Nutzern bei Anfragen zu öffentlichen IT-Dokumentationen zu helfen und relevante Informationen bereitzustellen.' + 'USER: '+ user_input,
     langchain_action="Query",
     top_k_docs=3,
     document_subset='Relevant',
