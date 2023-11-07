@@ -23,7 +23,7 @@ def get_response():
     kwargs = dict(
 
         langchain_mode='UserData',
-    instruction_nochat='Du bist ein Fraunhofer-Assistent für IT-Fragen. Deine Aufgabe ist es, Nutzern bei Anfragen zu öffentlichen IT-Dokumentationen zu helfen und relevante Informationen bereitzustellen.' + 'USER: '+ user_input,
+    instruction_nochat='Du bist ein Assistent für Fragen zu öffentlichen IT-Publikationen. Du hielfst dabei relevante Informationen bereitzustellen.' + 'USER: '+ user_input,
     langchain_action="Query",
     top_k_docs=3,
     document_subset='Relevant',
@@ -52,6 +52,6 @@ def get_response():
 
 if __name__ == '__main__':
 
-    app.run(host='0.0.0.0', port=5000)
+    #app.run(host='0.0.0.0', port=5000)
 
-    #app.run(debug=True)
+    app.run(debug=True)

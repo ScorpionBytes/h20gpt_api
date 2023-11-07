@@ -21,12 +21,17 @@ const loadDataFromLocalstorage = () => {
 }
 // Laden der mapping.json Datei
 const loadMappingData = async () => {
-    const response = await fetch('/static/mapping.json'); // Pfad zur mapping.json Datei anpassen
-    const mappingData = await response.json();
+    const response = await fetch('/static/publikationen-prod.json'); // Pfad zur mapping.json Datei anpassen
+    const publications = await response.json();
+    // Erstellen Sie ein Mapping von Titel zu URL
+    const mappingData = publications.reduce((acc, publication) => {
+        acc[publication.title] = publication.url;
+        return acc;
+    }, {});
     return mappingData;
 };
 
-// Funktion zum Finden des Dateinamens basierend auf der URL
+// Funktion zum Finden der URL basierend auf dem Dateinamen
 const findUrlByFileName = (fileName, mappingData) => {
     // Entfernen Sie den Pfad und die Dateiendung, um nur den Titel zu erhalten
     const title = fileName.replace('user_path/', '').replace('.txt', '').replace('.pdf', '');
@@ -34,6 +39,8 @@ const findUrlByFileName = (fileName, mappingData) => {
     const url = mappingData[title];
     return url || "URL nicht gefunden";
 };
+
+
 const createChatElement = (content, className) => {
     // Create new div and apply chat, specified class and set html content of div
     const chatDiv = document.createElement("div");
@@ -65,15 +72,16 @@ const getChatResponse = async (incomingChatDiv) => {
             const trimmedResponse = data.response.trim();
             const htmlContent = marked.marked(trimmedResponse);
             chatResponseDiv.innerHTML = `<p>${htmlContent}</p>`;
- const firstEmptyP = chatResponseDiv.querySelector('p:empty');
-        if (firstEmptyP) {
-            chatResponseDiv.removeChild(firstEmptyP);
-        }        const mappingData = await loadMappingData();
+            const firstEmptyP = chatResponseDiv.querySelector('p:empty');
+            if (firstEmptyP) {
+                chatResponseDiv.removeChild(firstEmptyP);
+            }
+            const mappingData = await loadMappingData();
 
             // Füge Quellen hinzu
             if (data.sources && data.sources.length > 0) {
                 let sourcesHtml = "<div class='sources'><strong>Sources</strong><br>Sources [Score | Link]:<br>";
-            data.sources.forEach(source => {
+                data.sources.forEach(source => {
                 const fileName = source.source.replace('user_path/', '').replace('.txt', ''); // Entfernen Sie den Pfad und die Dateiendung
                 const url = findUrlByFileName(fileName, mappingData); // Reverse-Mapping hier
                 sourcesHtml += `${source.score.toFixed(2)} | <a href="${url}" target="_blank">${fileName}</a><br>${source.content}<br>`;
@@ -97,7 +105,6 @@ const getChatResponse = async (incomingChatDiv) => {
 }
 
 
-
 function removeEmptyParagraphs(element) {
     const paragraphs = element.querySelectorAll('p');
     paragraphs.forEach(p => {
@@ -106,6 +113,7 @@ function removeEmptyParagraphs(element) {
         }
     });
 }
+
 const copyResponse = (copyBtn) => {
     const closestChatContent = copyBtn.closest('.chat-content');
     if (closestChatContent) {
@@ -135,12 +143,9 @@ const copyResponse = (copyBtn) => {
 };
 
 
-
-
-
 const showTypingAnimation = () => {
     // Display the typing animation and call the getChatResponse function
-const html = `<div class="chat-content">
+    const html = `<div class="chat-content">
                 <div class="chat-details">
                 <div class="images"><svg xmlns="http://www.w3.org/2000/svg" height="30" width="30" viewBox="0 0 640 512"><style>svg{fill:#416779}</style><path d="M320 0c17.7 0 32 14.3 32 32V96H472c39.8 0 72 32.2 72 72V440c0 39.8-32.2 72-72 72H168c-39.8 0-72-32.2-72-72V168c0-39.8 32.2-72 72-72H288V32c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H208zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H304zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H400zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224H64V416H48c-26.5 0-48-21.5-48-48V272c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H576V224h16z"/></svg>
 </div>
@@ -173,7 +178,7 @@ const handleOutgoingChat = () => {
     chatInput.value = "";
     chatInput.style.height = `${initialInputHeight}px`;
 
-const html = `<div class="chat-content">
+    const html = `<div class="chat-content">
                 <div class="chat-details">
                 <div class="images"><svg xmlns="http://www.w3.org/2000/svg" height="30" width="30" viewBox="0 0 448 512"><style>svg{fill:#416779}</style><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>
 </div>
@@ -229,7 +234,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 loadDataFromLocalstorage();
 sendButton.addEventListener("click", handleOutgoingChat);
-chatContainer.addEventListener('click', function(event) {
+chatContainer.addEventListener('click', function (event) {
     if (event.target.matches('.material-symbols-rounded')) {
         copyResponse(event.target);
     }
